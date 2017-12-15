@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="horizontal">
+ 
+  <LinearLayout 
+        android:id="@+id/last_station_layout"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+    	android:layout_height="match_parent"
+    	android:gravity="center"
+    	android:orientation="vertical">
+    	<TextView 
+    	    android:layout_width="80dp"
+    		android:layout_height="80dp"
+    		android:layout_gravity="center"
+    		android:gravity="center"
+    		android:text="上一站"
+    		android:textColor="@color/white"
+    		android:textStyle="bold"
+    		android:background="@drawable/bg_arrival_tip"
+    		android:textSize="16dp"/>
+    	
+    	<TextView 
+    	    android:id="@+id/last_station"
+    	    android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginTop="5dp"
+    		android:layout_gravity="center_horizontal"
+    		android:gravity="center"
+    		android:text="西南"
+    		android:textColor="@color/black"
+    		android:textSize="16dp"/>
+        
+    </LinearLayout>
+    
+   <LinearLayout 
+        android:layout_width="0dp"
+        android:layout_weight="1"
+    	android:layout_height="match_parent"
+    	android:gravity="center"
+    	android:orientation="vertical">
+    	<TextView 
+    	    android:layout_width="80dp"
+    		android:layout_height="80dp"
+    		android:layout_gravity="center"
+    		android:gravity="center"
+    		android:text="当前站"
+    		android:textColor="@color/white"
+    		android:textStyle="bold"
+    		android:background="@drawable/bg_arrival_tip"
+    		android:textSize="16dp"/>
+    	
+    	<TextView 
+    	    android:id="@+id/now_station"
+    	    android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginTop="5dp"
+    		android:layout_gravity="center_horizontal"
+    		android:gravity="center"
+    		android:text="呵呵"
+    		android:textColor="@color/black"
+    		android:textSize="16dp"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:id="@+id/next_station_layout"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+    	android:layout_height="match_parent"
+    	android:gravity="center"
+    	android:orientation="vertical">
+    	<TextView 
+    	    android:layout_width="80dp"
+    		android:layout_height="80dp"
+    		android:layout_gravity="center"
+    		android:gravity="center"
+    		android:text="下一站"
+    		android:textColor="@color/white"
+    		android:textStyle="bold"
+    		android:background="@drawable/bg_arrival_tip"
+    		android:textSize="16dp"/>
+    	
+    	<TextView 
+    	    android:id="@+id/next_station"
+    	    android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginTop="5dp"
+    		android:layout_gravity="center_horizontal"
+    		android:gravity="center"
+    		android:text="东北"
+    		android:textColor="@color/black"
+    		android:textSize="16dp"/>
+        
+    </LinearLayout>
+</LinearLayout>

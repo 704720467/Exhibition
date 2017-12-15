@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+    
+    <include  
+        android:id="@+id/top"
+        layout="@layout/top_layout"/>
+    
+    <RelativeLayout 
+        android:id="@+id/content_layout"
+        android:layout_below="@+id/top"
+        android:layout_width="match_parent"
+    	android:layout_height="match_parent">
+         <LinearLayout
+        	android:id="@+id/station_content"
+        	android:layout_width="match_parent"
+    		android:layout_height="match_parent"
+    		android:paddingTop="10dp"
+    		android:orientation="horizontal">
+    	</LinearLayout>
+    	<com.yunfan.exhibition.view.ArrivalTipLayout
+    	    android:id="@+id/arrival_layout"
+    	    android:layout_width="match_parent"
+    		android:layout_height="match_parent"
+    		android:background="@color/white"
+    		android:visibility="gone">
+    	</com.yunfan.exhibition.view.ArrivalTipLayout>
+    </RelativeLayout>
+    
+    <VideoView 
+        android:id="@+id/video"
+        android:layout_below="@+id/top"
+        android:layout_toRightOf="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_alignParentRight="true"
+    	android:layout_height="match_parent"/>
+   
+    <TextView
+        android:id="@+id/get_back_data" 
+        android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentBottom="true"
+    	android:text="红色表示已经经过的站，换色闪烁代表将要到站，绿色代表还未到站"
+    	android:layout_margin="10dp"
+    	android:textSize="18dp"
+    	android:textColor="@color/red"/>
+</RelativeLayout>

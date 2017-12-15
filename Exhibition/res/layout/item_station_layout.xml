@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+ 
+    <LinearLayout 
+        android:id="@+id/top_tip"
+        android:layout_width="wrap_content"
+    	android:layout_height="10dp"
+    	android:orientation="horizontal">
+        <TextView 
+    	    android:id="@+id/top_left"
+    	    android:layout_width="40dp"
+    		android:layout_height="10dp"
+    		android:background="@color/top_layout_color"/>
+    	
+    	<TextView 
+    	    android:id="@+id/top_middle"
+    	    android:layout_width="5dp"
+    		android:layout_height="5dp"
+    		android:layout_gravity="center_vertical"
+    		android:background="@drawable/bt_tv"/>
+    	
+    	<TextView 
+    	    android:id="@+id/top_right"
+    	    android:layout_width="40dp"
+    		android:layout_height="10dp"
+    		android:background="@color/top_layout_color"/>
+        
+    </LinearLayout>
+    	
+    <LinearLayout 
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:paddingTop="5dp"
+    	android:gravity="center_horizontal"
+    	android:orientation="horizontal">
+    	    
+    	   <TextView 
+    	     android:id="@+id/station_information"
+    	     android:layout_width="15dp"
+    		android:layout_height="wrap_content"
+    		android:textColor="@color/black"
+    		android:textSize="15dp"
+    		android:layout_gravity="left"
+    		android:text="应用开发中，大家会遇"/>
+    	
+    		<TextView 
+    	    	android:id="@+id/station_remarks"
+    	    	android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:ems="1"
+    			android:layout_marginTop="10dp"
+    			android:textColor="@color/black"
+    			android:textSize="11dp"
+    			android:visibility="gone"
+    			android:text="应用开发中，大家会遇"/>
+    	</LinearLayout>
+    
+    
+</LinearLayout>
