@@ -22,6 +22,7 @@ import com.yunfan.exhibition.model.EnumStationType;
 import com.yunfan.exhibition.model.StationModel;
 import com.yunfan.exhibition.model.StationResult;
 import com.yunfan.exhibition.uitl.DeviceUtil;
+import com.yunfan.exhibition.uitl.MyTextViewUtil;
 import com.yunfan.exhibition.uitl.SerialPortUtil;
 import com.yunfan.exhibition.view.ArrivalTipLayout;
 import com.yunfan.exhibition.view.StationView;
@@ -70,7 +71,7 @@ public class MainActivity extends SerialPortActivity {
 		mTvNowStation = (TextView) findViewById(R.id.now_station);
 		mTvNextStation = (TextView) findViewById(R.id.next_station);
 		mGetBackData = (TextView) findViewById(R.id.get_back_data);
-		new ExcelDataLoader().execute("lightRailStationName2.xls");
+		new ExcelDataLoader().execute("lightRailStationName.xls");
 	}
 
 	/**
@@ -92,12 +93,6 @@ public class MainActivity extends SerialPortActivity {
 			int sheetNum = workbook.getNumberOfSheets();
 			int sheetRows = sheet.getRows();
 			int sheetColumns = sheet.getColumns();
-			//
-			// Log.d(TAG, "the num of sheets is " + sheetNum);
-			// Log.d(TAG, "the name of sheet is  " + sheet.getName());
-			// Log.d(TAG, "total rows is 行=" + sheetRows);
-			// Log.d(TAG, "total cols is 列=" + sheetColumns);
-
 			for (int i = 1; i < sheetRows; i++) {
 				StationModel StationModel = new StationModel();
 				StationModel.setStationNumber(Integer.parseInt(sheet.getCell(0, i).getContents()));
@@ -120,9 +115,6 @@ public class MainActivity extends SerialPortActivity {
 
 		@Override
 		protected void onPreExecute() {
-			// progressDialog.setMessage("加载中,请稍后......");
-			// progressDialog.setCanceledOnTouchOutside(false);
-			// progressDialog.show();
 		}
 
 		@Override
@@ -135,15 +127,10 @@ public class MainActivity extends SerialPortActivity {
 			if (countryModels != null && countryModels.size() > 0) {
 				if (stationList == null)
 					stationList = new ArrayList<StationModel>();
-				// if (stationListMap == null)
-				// stationListMap = new HashMap<String, StationModel>();
-				// stationListMap.clear();
 				stationList.clear();
 				for (int i = 0; i < countryModels.size(); i++) {
 					Log.e(TAG, countryModels.get(i).toString() + "\n");
 					stationList.add(countryModels.get(i));
-					// stationListMap.put(countryModels.get(i).getStationNumber(),
-					// countryModels.get(i));
 				}
 				initData();
 			}
@@ -158,7 +145,6 @@ public class MainActivity extends SerialPortActivity {
 			rightAdWidth = screenWidth - ((middlePointWidth + rectangleWidth) * stationList.size());
 			mContentLayout.getLayoutParams().width = ((middlePointWidth + rectangleWidth * 2) * stationList.size());
 			videoView.getLayoutParams().width = rightAdWidth;
-			// stationList.get(0).setArrivalState(1);
 			addChileView();
 		}
 	}
@@ -186,12 +172,23 @@ public class MainActivity extends SerialPortActivity {
 			return;
 		}
 
-		boolean positiveSequence = (stationList.get(0).getStationNumber() < stationList.get(stationList.size() - 1).getStationNumber());
-		stationList.get(mainPosition).setArrivalState(event == EnumStationEvent.PreArrival ? EnumStationType.PreArrival : EnumStationType.Arrival);
+		boolean positiveSequence = (stationList.get(0).getStationNumber()) < (stationList.get(stationList.size() - 1).getStationNumber());
 		for (StationModel stationModel : stationList) {
 			boolean isArrival = (positiveSequence && stationModel.getStationNumber() < mainPosition)// 正序的情况下，序号小于预到站代表已经到站
 					|| (!positiveSequence && stationModel.getStationNumber() > mainPosition);// 倒叙的情况下，序号大于预到站代表已经到站
 			stationModel.setArrivalState(isArrival ? EnumStationType.Arrival : EnumStationType.NoArrival);
+		}
+		mainPosition = positiveSequence ? mainPosition : (stationList.size() - 1 - mainPosition);
+		stationList.get(mainPosition).setArrivalState((event == EnumStationEvent.PreArrival ? EnumStationType.PreArrival : EnumStationType.Arrival));
+		if (event == EnumStationEvent.Arrival) {
+			handler.sendMessage(handler.obtainMessage());
+			String lastStationName = (mainPosition == 0) ? null : stationList.get(mainPosition - 1).getStationName();
+			String nowStationName = stationList.get(mainPosition).getStationName();
+			String nextStationName = (mainPosition == stationList.size() - 1) ? null : stationList.get(mainPosition + 1).getStationName();
+			mArrivalLayout.setStationInfor(lastStationName, nowStationName, nextStationName);
+		}
+		if (event == EnumStationEvent.PreArrival) {
+			MyTextViewUtil.setStringForTextView(mTvNextStation, stationList.get(mainPosition).getStationName());
 		}
 	}
 
@@ -207,8 +204,6 @@ public class MainActivity extends SerialPortActivity {
 		runOnUiThread(new Runnable() {
 			public void run() {
 				if (stationResult != null) {
-
-
 					if (stationResult.getType() == EnumStationEvent.NON)
 						return;
 
@@ -217,6 +212,9 @@ public class MainActivity extends SerialPortActivity {
 					if (stationResult.getType() == EnumStationEvent.BeginningAndEnd) {
 						if (stationList.get(0).getStationNumber() != stationResult.getStartStation())
 							Collections.reverse(stationList);
+						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station), stationList.get(0).getStationName());
+						MyTextViewUtil
+								.setStringForTextView((TextView) findViewById(R.id.end_station), stationList.get(stationList.size() - 1).getStationName());
 					}
 					if (stationResult.getType() == EnumStationEvent.PreArrival) {
 						if (stationList.size() <= mainPosition)
@@ -225,11 +223,6 @@ public class MainActivity extends SerialPortActivity {
 					if (stationResult.getType() == EnumStationEvent.Arrival) {
 						if (stationList.size() <= mainPosition)
 							return;
-						handler.sendMessage(handler.obtainMessage());
-						String lastStationName=(stationResult.getArrivalStation()==0)?null:stationList.get(stationResult.getArrivalStation()-1).getStationName();
-						String nowStationName=stationList.get(stationResult.getArrivalStation()).getStationName();
-						String nextStationName=(stationResult.getArrivalStation()==stationList.size()-1)?null:stationList.get(stationResult.getArrivalStation()+1).getStationName();
-						mArrivalLayout.setStationInfor(lastStationName, nowStationName, nextStationName);
 					}
 					initData(mainPosition, stationResult.getType());
 					addChileView();
