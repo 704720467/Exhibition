@@ -6,14 +6,19 @@ import java.util.Collections;
 import jxl.Sheet;
 import jxl.Workbook;
 import android.content.res.AssetManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.yunfan.exhibition.activity.SerialPortActivity;
@@ -30,6 +35,7 @@ import com.yunfan.exhibition.view.StationView;
 public class MainActivity extends SerialPortActivity {
 	private RelativeLayout mContentLayout;
 	private LinearLayout mStationContentLayout;
+	private FrameLayout mVideoLayour;
 	private VideoView videoView;
 
 	private ArrivalTipLayout mArrivalLayout;
@@ -66,6 +72,7 @@ public class MainActivity extends SerialPortActivity {
 		mContentLayout = (RelativeLayout) findViewById(R.id.content_layout);
 		mStationContentLayout = (LinearLayout) findViewById(R.id.station_content);
 		videoView = (VideoView) findViewById(R.id.video);
+		mVideoLayour = (FrameLayout) findViewById(R.id.video_layour);
 		mArrivalLayout = (ArrivalTipLayout) findViewById(R.id.arrival_layout);
 		mTvLastStation = (TextView) findViewById(R.id.last_station);
 		mTvNowStation = (TextView) findViewById(R.id.now_station);
@@ -144,7 +151,10 @@ public class MainActivity extends SerialPortActivity {
 			rectangleWidth = Math.round(s / stationList.size() / 2);
 			rightAdWidth = screenWidth - ((middlePointWidth + rectangleWidth) * stationList.size());
 			mContentLayout.getLayoutParams().width = ((middlePointWidth + rectangleWidth * 2) * stationList.size());
-			videoView.getLayoutParams().width = rightAdWidth;
+			// videoView.getLayoutParams().width = rightAdWidth;
+			videoView.getLayoutParams().height = 1920;
+			ViewGroup.LayoutParams lp = mVideoLayour.getLayoutParams();
+			lp.width = rightAdWidth;
 			addChileView();
 		}
 	}
@@ -229,5 +239,31 @@ public class MainActivity extends SerialPortActivity {
 				}
 			}
 		});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (videoView == null)
+			return;
+		String uriStr = "android.resource://" + getPackageName() + "/" + R.raw.zhui_guang_zhe;
+		Uri uri = Uri.parse(uriStr);
+		// 设置视频控制器
+		// videoView.setMediaController(new MediaController(this));
+		// 播放完成回调
+		videoView.setOnCompletionListener(new MyPlayerOnCompletionListener());
+		// 设置视频路径
+		videoView.setVideoURI(uri);
+		// 开始播放视频
+		videoView.start();
+	}
+
+	class MyPlayerOnCompletionListener implements MediaPlayer.OnCompletionListener {
+
+		@Override
+		public void onCompletion(MediaPlayer mp) {
+			Toast.makeText(MainActivity.this, "播放完成了", Toast.LENGTH_SHORT).show();
+			videoView.start();
+		}
 	}
 }
