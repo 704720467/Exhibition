@@ -3,24 +3,6 @@ package com.yunfan.exhibition;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import jxl.Sheet;
-import jxl.Workbook;
-import android.content.res.AssetManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
-
 import com.yunfan.exhibition.activity.SerialPortActivity;
 import com.yunfan.exhibition.model.EnumStationEvent;
 import com.yunfan.exhibition.model.EnumStationType;
@@ -32,10 +14,26 @@ import com.yunfan.exhibition.uitl.SerialPortUtil;
 import com.yunfan.exhibition.view.ArrivalTipLayout;
 import com.yunfan.exhibition.view.StationView;
 
+import android.content.res.AssetManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.VideoView;
+import jxl.Sheet;
+import jxl.Workbook;
+
 public class MainActivity extends SerialPortActivity {
 	private RelativeLayout mContentLayout;
 	private LinearLayout mStationContentLayout;
-	private FrameLayout mVideoLayour;
+	private RelativeLayout mVideoLayour;
 	private VideoView videoView;
 
 	private ArrivalTipLayout mArrivalLayout;
@@ -65,14 +63,15 @@ public class MainActivity extends SerialPortActivity {
 			mArrivalLayout.setVisibility((mArrivalLayout.getVisibility() != View.VISIBLE) ? View.VISIBLE : View.GONE);
 		};
 	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_main2);
 		mContentLayout = (RelativeLayout) findViewById(R.id.content_layout);
 		mStationContentLayout = (LinearLayout) findViewById(R.id.station_content);
 		videoView = (VideoView) findViewById(R.id.video);
-		mVideoLayour = (FrameLayout) findViewById(R.id.video_layour);
+		// mVideoLayour = (RelativeLayout) findViewById(R.id.video_layour);
 		mArrivalLayout = (ArrivalTipLayout) findViewById(R.id.arrival_layout);
 		mTvLastStation = (TextView) findViewById(R.id.last_station);
 		mTvNowStation = (TextView) findViewById(R.id.now_station);
@@ -146,15 +145,19 @@ public class MainActivity extends SerialPortActivity {
 		private void initData() {
 			screenWidth = DeviceUtil.getScreenWidthSize(MainActivity.this);
 			middlePointWidth = DeviceUtil.dp2px(MainActivity.this, 6);
-			float s = (screenWidth - (float) screenWidth / 3) - stationList.size() * middlePointWidth;
-
-			rectangleWidth = Math.round(s / stationList.size() / 2);
+			// float allRectangleWidth = (screenWidth - (float) screenWidth / 3)
+			// - stationList.size() * middlePointWidth;
+			float allRectangleWidth = mContentLayout.getLayoutParams().width;
+			rectangleWidth = Math.round(allRectangleWidth / stationList.size() / 2);
 			rightAdWidth = screenWidth - ((middlePointWidth + rectangleWidth) * stationList.size());
-			mContentLayout.getLayoutParams().width = ((middlePointWidth + rectangleWidth * 2) * stationList.size());
+			// mContentLayout.getLayoutParams().width = ((middlePointWidth +
+			// rectangleWidth * 2) * stationList.size());
 			// videoView.getLayoutParams().width = rightAdWidth;
-			videoView.getLayoutParams().height = 1920;
-			ViewGroup.LayoutParams lp = mVideoLayour.getLayoutParams();
-			lp.width = rightAdWidth;
+			// videoView.getLayoutParams().height = 1920;
+			// Log.e(TAG, "===================>" +
+			// mContentLayout.getLayoutParams().width + ";" + rightAdWidth);
+			// ViewGroup.LayoutParams lp = mVideoLayour.getLayoutParams();
+			// lp.width = rightAdWidth;
 			addChileView();
 		}
 	}
@@ -182,19 +185,22 @@ public class MainActivity extends SerialPortActivity {
 			return;
 		}
 
-		boolean positiveSequence = (stationList.get(0).getStationNumber()) < (stationList.get(stationList.size() - 1).getStationNumber());
+		boolean positiveSequence = (stationList.get(0).getStationNumber()) < (stationList.get(stationList.size() - 1)
+				.getStationNumber());
 		for (StationModel stationModel : stationList) {
 			boolean isArrival = (positiveSequence && stationModel.getStationNumber() < mainPosition)// 正序的情况下，序号小于预到站代表已经到站
 					|| (!positiveSequence && stationModel.getStationNumber() > mainPosition);// 倒叙的情况下，序号大于预到站代表已经到站
 			stationModel.setArrivalState(isArrival ? EnumStationType.Arrival : EnumStationType.NoArrival);
 		}
 		mainPosition = positiveSequence ? mainPosition : (stationList.size() - 1 - mainPosition);
-		stationList.get(mainPosition).setArrivalState((event == EnumStationEvent.PreArrival ? EnumStationType.PreArrival : EnumStationType.Arrival));
+		stationList.get(mainPosition).setArrivalState(
+				(event == EnumStationEvent.PreArrival ? EnumStationType.PreArrival : EnumStationType.Arrival));
 		if (event == EnumStationEvent.Arrival) {
 			handler.sendMessage(handler.obtainMessage());
 			String lastStationName = (mainPosition == 0) ? null : stationList.get(mainPosition - 1).getStationName();
 			String nowStationName = stationList.get(mainPosition).getStationName();
-			String nextStationName = (mainPosition == stationList.size() - 1) ? null : stationList.get(mainPosition + 1).getStationName();
+			String nextStationName = (mainPosition == stationList.size() - 1) ? null
+					: stationList.get(mainPosition + 1).getStationName();
 			mArrivalLayout.setStationInfor(lastStationName, nowStationName, nextStationName);
 		}
 		if (event == EnumStationEvent.PreArrival) {
@@ -222,9 +228,10 @@ public class MainActivity extends SerialPortActivity {
 					if (stationResult.getType() == EnumStationEvent.BeginningAndEnd) {
 						if (stationList.get(0).getStationNumber() != stationResult.getStartStation())
 							Collections.reverse(stationList);
-						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station), stationList.get(0).getStationName());
-						MyTextViewUtil
-								.setStringForTextView((TextView) findViewById(R.id.end_station), stationList.get(stationList.size() - 1).getStationName());
+						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station),
+								stationList.get(0).getStationName());
+						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.end_station),
+								stationList.get(stationList.size() - 1).getStationName());
 					}
 					if (stationResult.getType() == EnumStationEvent.PreArrival) {
 						if (stationList.size() <= mainPosition)
