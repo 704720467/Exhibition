@@ -11,11 +11,10 @@ import com.yunfan.exhibition.uitl.Constent;
 
 public class Application extends android.app.Application {
 
-    public SerialPortFinder mSerialPortFinder = new SerialPortFinder();
-    private SerialPort mSerialPort = null;
+	public SerialPortFinder mSerialPortFinder = new SerialPortFinder();
+	private SerialPort mSerialPort = null;
 	private static Application app;
 	public String TAG = "Application";
-
 
 	public synchronized static Application getAppContext() {
 		return app;
@@ -27,16 +26,16 @@ public class Application extends android.app.Application {
 		app = this;
 	}
 
-    public SerialPort getSerialPort() throws SecurityException, IOException, InvalidParameterException {
+	public SerialPort getSerialPort() throws SecurityException, IOException, InvalidParameterException {
 		if (mSerialPort == null)
-            mSerialPort = new SerialPort(new File(Constent.PATH), Constent.BAUDRATE, 0);
-        return mSerialPort;
-    }
+			mSerialPort = new SerialPort(new File(Constent.PATH), Constent.BAUDRATE, 0);
+		return mSerialPort;
+	}
 
-    public void closeSerialPort() {
-        if (mSerialPort != null) {
-            mSerialPort.close();
-            mSerialPort = null;
-        }
-    }
+	public void closeSerialPort() {
+		if (mSerialPort != null) {
+			mSerialPort.close();
+			mSerialPort = null;
+		}
+	}
 }

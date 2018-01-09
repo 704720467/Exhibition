@@ -17,14 +17,22 @@
             android:screenOrientation="landscape">
          
         </activity>
-        <activity android:name="com.yunfan.exhibition.MainActivity">
+        <activity android:name="com.yunfan.exhibition.MainActivity"
+            android:screenOrientation="landscape">
                <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.yunfan.exhibition.activity.CopyOfConsoleActivity">
+        <activity android:name="com.yunfan.exhibition.activity.CopyOfConsoleActivity" 
+            android:screenOrientation="landscape">
+          
             
+        </activity>
+        
+        <activity android:name="com.yunfan.exhibition.activity.MainActivity22"
+            android:screenOrientation="landscape">
+              
         </activity>
         
         <receiver android:name="com.yunfan.exhibition.BootReceiver">

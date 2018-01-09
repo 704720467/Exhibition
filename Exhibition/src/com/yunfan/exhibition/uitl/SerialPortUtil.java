@@ -23,7 +23,13 @@ public class SerialPortUtil {
 	 */
 	public static StationResult analyticData(String strSerialData) {
 		StationResult stationResult = new StationResult();
-		if (strSerialData == null || strSerialData.length() < 14) {
+		if (strSerialData.length() < 7 * 2 || strSerialData.length() > 20 * 2) {
+			System.out.println("数据残缺strSerialData：" + strSerialData);
+			stationResult.setDescribe("数据残缺strSerialData：" + strSerialData);
+			return stationResult;
+		}
+		strSerialData = strSerialData.substring(strSerialData.lastIndexOf("55"));
+		if (strSerialData == null || strSerialData.length() < 7 * 2 || strSerialData.length() > 20 * 2) {
 			System.out.println("数据残缺strSerialData：" + strSerialData);
 			stationResult.setDescribe("数据残缺strSerialData：" + strSerialData);
 			return stationResult;
@@ -46,18 +52,15 @@ public class SerialPortUtil {
 
 		String back = null;
 		if (dataArray[3] == dataArray[4]) {
-			back = "本次设置始末站：" + dataArray[3] + "=" + dataArray[4] + "\n始发站序号为：" + dataArray[4] + ";终点站序号为："
-					+ dataArray[5];
+			back = "本次设置始末站：" + dataArray[3] + "=" + dataArray[4] + "\n始发站序号为：" + dataArray[4] + ";终点站序号为：" + dataArray[5];
 			stationResult.setType(EnumStationEvent.BeginningAndEnd);
 			System.out.println(back);
 		} else if ((dataArray[3] >= Integer.parseInt("80", 16)) && (dataArray[3] <= Integer.parseInt("A0", 16))) {
-			back = "本次设置  预到站  信息：前方  预到站  序号为" + (dataArray[3] - Integer.parseInt("80", 16)) + "\n始发站序号为："
-					+ dataArray[4] + ";终点站序号为：" + dataArray[5];
+			back = "本次设置  预到站  信息：前方  预到站  序号为" + (dataArray[3] - Integer.parseInt("80", 16)) + "\n始发站序号为：" + dataArray[4] + ";终点站序号为：" + dataArray[5];
 			stationResult.setType(EnumStationEvent.PreArrival);
 			System.out.println(back);
 		} else if ((dataArray[3] >= 0) && (dataArray[3] <= Integer.parseInt("20", 16))) {
-			back = "本次设置  本次到站  信息：前方  到站  序号为" + dataArray[3] + "\n始发站序号为："
-					+ dataArray[4] + ";终点站序号为：" + dataArray[5];
+			back = "本次设置  本次到站  信息：前方  到站  序号为" + dataArray[3] + "\n始发站序号为：" + dataArray[4] + ";终点站序号为：" + dataArray[5];
 			stationResult.setType(EnumStationEvent.Arrival);
 			System.out.println(back);
 		} else {

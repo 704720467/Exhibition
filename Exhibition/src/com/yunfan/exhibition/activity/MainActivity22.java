@@ -1,10 +1,10 @@
-package com.yunfan.exhibition;
+package com.yunfan.exhibition.activity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import jxl.Sheet;
 import jxl.Workbook;
+import android.app.Activity;
 import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -20,18 +21,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.yunfan.exhibition.activity.SerialPortActivity;
+import com.yunfan.exhibition.R;
 import com.yunfan.exhibition.model.EnumStationEvent;
 import com.yunfan.exhibition.model.EnumStationType;
 import com.yunfan.exhibition.model.StationModel;
-import com.yunfan.exhibition.model.StationResult;
 import com.yunfan.exhibition.uitl.DeviceUtil;
 import com.yunfan.exhibition.uitl.MyTextViewUtil;
-import com.yunfan.exhibition.uitl.SerialPortUtil;
 import com.yunfan.exhibition.view.ArrivalTipLayout;
 import com.yunfan.exhibition.view.StationView;
 
-public class MainActivity extends SerialPortActivity {
+public class MainActivity22 extends Activity {
 	private RelativeLayout mContentLayout;
 	private LinearLayout mStationContentLayout;
 	private FrameLayout mVideoLayour;
@@ -144,15 +143,17 @@ public class MainActivity extends SerialPortActivity {
 		}
 
 		private void initData() {
-			screenWidth = DeviceUtil.getScreenWidthSize(MainActivity.this) * 2;
+
+			screenWidth = DeviceUtil.getScreenWidthSize(com.yunfan.exhibition.activity.Application.getAppContext()) * 2;
 			rightAdWidth = screenWidth / 3;
-			middlePointWidth = DeviceUtil.dp2px(MainActivity.this, 6);
+			middlePointWidth = DeviceUtil.dp2px(MainActivity22.this, 6);
 			float allRectangleWidth = (screenWidth - rightAdWidth) - stationList.size() * middlePointWidth;
 			rectangleWidth = Math.round(allRectangleWidth / stationList.size() / 2);
-			mContentLayout.getLayoutParams().width = (rectangleWidth * 2 + middlePointWidth) * stationList.size();
-			rightAdWidth = screenWidth - mContentLayout.getLayoutParams().width;
-			Log.e(TAG, "===================>MainActivity" + mContentLayout.getLayoutParams().width + ";" + rightAdWidth + ";stationList.size()=" + stationList.size());
-			mVideoLayour.getLayoutParams().width = rightAdWidth;
+			mContentLayout.getLayoutParams().width = screenWidth - rightAdWidth;
+			int ss = (rectangleWidth * 2 + middlePointWidth) * stationList.size();
+			Log.e(TAG, "===================>" + mContentLayout.getLayoutParams().width + ";" + rightAdWidth + ";stationList.size()=" + stationList.size() + ";;ss=" + ss);
+			ViewGroup.LayoutParams lp = mVideoLayour.getLayoutParams();
+			lp.width = rightAdWidth;
 			addChileView();
 		}
 	}
@@ -201,44 +202,6 @@ public class MainActivity extends SerialPortActivity {
 	}
 
 	@Override
-	protected void onDataReceived(final byte[] buffer, final int size) {
-		byte[] hex = "0123456789ABCDEF".getBytes();
-		byte[] buff = new byte[2 * size];
-		for (int i = 0; i < size; i++) {
-			buff[2 * i] = hex[(buffer[i] >> 4) & 0x0f];
-			buff[2 * i + 1] = hex[buffer[i] & 0x0f];
-		}
-		final StationResult stationResult = SerialPortUtil.analyticData(new String(buff));
-		runOnUiThread(new Runnable() {
-			public void run() {
-				if (stationResult != null) {
-					if (stationResult.getType() == EnumStationEvent.NON)
-						return;
-
-					int mainPosition = stationResult.getArrivalStation();
-
-					if (stationResult.getType() == EnumStationEvent.BeginningAndEnd) {
-						if (stationList.get(0).getStationNumber() != stationResult.getStartStation())
-							Collections.reverse(stationList);
-						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station), stationList.get(0).getStationName());
-						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.end_station), stationList.get(stationList.size() - 1).getStationName());
-					}
-					if (stationResult.getType() == EnumStationEvent.PreArrival) {
-						if (stationList.size() <= mainPosition)
-							return;
-					}
-					if (stationResult.getType() == EnumStationEvent.Arrival) {
-						if (stationList.size() <= mainPosition)
-							return;
-					}
-					initData(mainPosition, stationResult.getType());
-					addChileView();
-				}
-			}
-		});
-	}
-
-	@Override
 	protected void onResume() {
 		super.onResume();
 		if (videoView == null)
@@ -259,7 +222,7 @@ public class MainActivity extends SerialPortActivity {
 
 		@Override
 		public void onCompletion(MediaPlayer mp) {
-			Toast.makeText(MainActivity.this, "播放完成了", Toast.LENGTH_SHORT).show();
+			Toast.makeText(MainActivity22.this, "播放完成了", Toast.LENGTH_SHORT).show();
 			videoView.start();
 		}
 	}

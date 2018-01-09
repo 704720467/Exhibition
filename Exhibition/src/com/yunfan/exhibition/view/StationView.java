@@ -4,8 +4,10 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.LinearLayout;
@@ -20,7 +22,7 @@ import com.yunfan.exhibition.model.StationModel;
  * 站点的布局
  * 
  * @author zp
- *
+ * 
  */
 public class StationView extends LinearLayout {
 	private Context context;
@@ -37,7 +39,6 @@ public class StationView extends LinearLayout {
 	private int topMiddleWidth = 0;
 	private StationModel stationModel;
 
-
 	public StationView(Context context) {
 		super(context);
 	}
@@ -45,7 +46,6 @@ public class StationView extends LinearLayout {
 	public StationView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
-
 
 	public StationView(Context context, StationModel stationModel, int rectangleWidth, int topMiddleWidth) {
 		super(context);
@@ -73,12 +73,15 @@ public class StationView extends LinearLayout {
 		mTopLeft.getLayoutParams().width = rectangleWidth;
 		mTopMiddle.getLayoutParams().width = topMiddleWidth;
 		mTopMiddle.getLayoutParams().height = topMiddleWidth;
-		mTopMiddle.setBackgroundDrawable(getResources().getDrawable(
-				(stationModel.getArrivalState() == EnumStationType.Arrival) ? (R.drawable.bt_red_tv) : (R.drawable.bt_tv)));
+		mTopMiddle.setBackgroundDrawable(getResources().getDrawable((stationModel.getArrivalState() == EnumStationType.Arrival) ? (R.drawable.bt_red_tv) : (R.drawable.bt_tv)));
 		mTopRight.getLayoutParams().width = rectangleWidth;
-		
+
+		Log.e("", "===================>||||" + mTopLeft.getLayoutParams().width + ";" + mTopRight.getLayoutParams().width);
+
 		mTvStationInfo.setTextColor(Color.parseColor((stationModel.getArrivalState() == EnumStationType.Arrival) ? "#ff0000" : "#000000"));
 		mTvStationRemarks.setTextColor(Color.parseColor((stationModel.getArrivalState() == EnumStationType.Arrival) ? "#ff0000" : "#000000"));
+		ViewGroup.LayoutParams lpLayoutParams = new ViewGroup.LayoutParams(22, ViewGroup.LayoutParams.MATCH_PARENT);
+		mContentLayour.setLayoutParams(lpLayoutParams);
 
 		mTvStationInfo.setText(stationModel.getStationName());
 		if (!TextUtils.isEmpty(stationModel.getRemarks())) {
