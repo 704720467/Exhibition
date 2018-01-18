@@ -3,8 +3,17 @@ package com.yunfan.exhibition;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import jxl.Sheet;
-import jxl.Workbook;
+import com.yunfan.exhibition.activity.SerialPortActivity;
+import com.yunfan.exhibition.model.EnumStationEvent;
+import com.yunfan.exhibition.model.EnumStationType;
+import com.yunfan.exhibition.model.StationModel;
+import com.yunfan.exhibition.model.StationResult;
+import com.yunfan.exhibition.uitl.DeviceUtil;
+import com.yunfan.exhibition.uitl.MyTextViewUtil;
+import com.yunfan.exhibition.uitl.SerialPortUtil;
+import com.yunfan.exhibition.view.ArrivalTipLayout;
+import com.yunfan.exhibition.view.StationView;
+
 import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -19,17 +28,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
-
-import com.yunfan.exhibition.activity.SerialPortActivity;
-import com.yunfan.exhibition.model.EnumStationEvent;
-import com.yunfan.exhibition.model.EnumStationType;
-import com.yunfan.exhibition.model.StationModel;
-import com.yunfan.exhibition.model.StationResult;
-import com.yunfan.exhibition.uitl.DeviceUtil;
-import com.yunfan.exhibition.uitl.MyTextViewUtil;
-import com.yunfan.exhibition.uitl.SerialPortUtil;
-import com.yunfan.exhibition.view.ArrivalTipLayout;
-import com.yunfan.exhibition.view.StationView;
+import jxl.Sheet;
+import jxl.Workbook;
 
 public class MainActivity extends SerialPortActivity {
 	private RelativeLayout mContentLayout;
@@ -151,7 +151,8 @@ public class MainActivity extends SerialPortActivity {
 			rectangleWidth = Math.round(allRectangleWidth / stationList.size() / 2);
 			mContentLayout.getLayoutParams().width = (rectangleWidth * 2 + middlePointWidth) * stationList.size();
 			rightAdWidth = screenWidth - mContentLayout.getLayoutParams().width;
-			Log.e(TAG, "===================>MainActivity" + mContentLayout.getLayoutParams().width + ";" + rightAdWidth + ";stationList.size()=" + stationList.size());
+			Log.e(TAG, "===================>MainActivity" + mContentLayout.getLayoutParams().width + ";" + rightAdWidth
+					+ ";stationList.size()=" + stationList.size());
 			mVideoLayour.getLayoutParams().width = rightAdWidth;
 			addChileView();
 		}
@@ -180,19 +181,22 @@ public class MainActivity extends SerialPortActivity {
 			return;
 		}
 
-		boolean positiveSequence = (stationList.get(0).getStationNumber()) < (stationList.get(stationList.size() - 1).getStationNumber());
+		boolean positiveSequence = (stationList.get(0).getStationNumber()) < (stationList.get(stationList.size() - 1)
+				.getStationNumber());
 		for (StationModel stationModel : stationList) {
 			boolean isArrival = (positiveSequence && stationModel.getStationNumber() < mainPosition)// 正序的情况下，序号小于预到站代表已经到站
 					|| (!positiveSequence && stationModel.getStationNumber() > mainPosition);// 倒叙的情况下，序号大于预到站代表已经到站
 			stationModel.setArrivalState(isArrival ? EnumStationType.Arrival : EnumStationType.NoArrival);
 		}
 		mainPosition = positiveSequence ? mainPosition : (stationList.size() - 1 - mainPosition);
-		stationList.get(mainPosition).setArrivalState((event == EnumStationEvent.PreArrival ? EnumStationType.PreArrival : EnumStationType.Arrival));
+		stationList.get(mainPosition).setArrivalState(
+				(event == EnumStationEvent.PreArrival ? EnumStationType.PreArrival : EnumStationType.Arrival));
 		if (event == EnumStationEvent.Arrival) {
 			handler.sendMessage(handler.obtainMessage());
 			String lastStationName = (mainPosition == 0) ? null : stationList.get(mainPosition - 1).getStationName();
 			String nowStationName = stationList.get(mainPosition).getStationName();
-			String nextStationName = (mainPosition == stationList.size() - 1) ? null : stationList.get(mainPosition + 1).getStationName();
+			String nextStationName = (mainPosition == stationList.size() - 1) ? null
+					: stationList.get(mainPosition + 1).getStationName();
 			mArrivalLayout.setStationInfor(lastStationName, nowStationName, nextStationName);
 		}
 		if (event == EnumStationEvent.PreArrival) {
@@ -216,12 +220,14 @@ public class MainActivity extends SerialPortActivity {
 						return;
 
 					int mainPosition = stationResult.getArrivalStation();
+					if (stationList.get(0).getStationNumber() != stationResult.getStartStation())
+						Collections.reverse(stationList);
 
 					if (stationResult.getType() == EnumStationEvent.BeginningAndEnd) {
-						if (stationList.get(0).getStationNumber() != stationResult.getStartStation())
-							Collections.reverse(stationList);
-						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station), stationList.get(0).getStationName());
-						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.end_station), stationList.get(stationList.size() - 1).getStationName());
+						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station),
+								stationList.get(0).getStationName());
+						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.end_station),
+								stationList.get(stationList.size() - 1).getStationName());
 					}
 					if (stationResult.getType() == EnumStationEvent.PreArrival) {
 						if (stationList.size() <= mainPosition)
