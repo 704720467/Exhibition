@@ -5,6 +5,8 @@ import java.util.Collections;
 
 import jxl.Sheet;
 import jxl.Workbook;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -41,6 +43,7 @@ public class MainActivity extends SerialPortActivity {
 	private TextView mTvLastStation;
 	private TextView mTvNowStation;
 	private TextView mTvNextStation;
+	private TextView mTvDataTv;
 
 	public ArrayList<StationModel> stationList;
 	// public HashMap<String, StationModel> stationListMap;
@@ -78,6 +81,7 @@ public class MainActivity extends SerialPortActivity {
 		mTvNowStation = (TextView) findViewById(R.id.now_station);
 		mTvNextStation = (TextView) findViewById(R.id.next_station);
 		mGetBackData = (TextView) findViewById(R.id.get_back_data);
+		mTvDataTv = (TextView) findViewById(R.id.dataTv);
 		new ExcelDataLoader().execute("lightRailStationName.xls");
 	}
 
@@ -200,6 +204,9 @@ public class MainActivity extends SerialPortActivity {
 		}
 	}
 
+	StringBuffer stringBuffer = new StringBuffer("接收到的数据，还没有进行处理：\n");
+	boolean showData = true;
+
 	@Override
 	protected void onDataReceived(final byte[] buffer, final int size) {
 		byte[] hex = "0123456789ABCDEF".getBytes();
@@ -208,7 +215,19 @@ public class MainActivity extends SerialPortActivity {
 			buff[2 * i] = hex[(buffer[i] >> 4) & 0x0f];
 			buff[2 * i + 1] = hex[buffer[i] & 0x0f];
 		}
+		// try {
+		// if (showData) {
+		// stringBuffer.append("\n" + new String(buff));
+		// mTvDataTv.setText(stringBuffer);
+		// }
+		// } catch (Exception e) {
+		// stringBuffer.append("\n数据拼接报错");
+		// mTvDataTv.setText(stringBuffer);
+		// }
+		// if (showData)
+		// return;
 		final StationResult stationResult = SerialPortUtil.analyticData(new String(buff));
+
 		runOnUiThread(new Runnable() {
 			public void run() {
 				if (stationResult != null) {
@@ -231,8 +250,19 @@ public class MainActivity extends SerialPortActivity {
 						if (stationList.size() <= mainPosition)
 							return;
 					}
-					initData(mainPosition, stationResult.getType());
-					addChileView();
+
+					try {
+						initData(mainPosition, stationResult.getType());
+					} catch (Exception e) {
+						toShowDialog("整理数据报错：" + e.getMessage());
+					}
+
+					try {
+						addChileView();
+					} catch (Exception e) {
+						toShowDialog("绘制布局出错：" + e.getMessage());
+					}
+
 				}
 			}
 		});
@@ -262,5 +292,27 @@ public class MainActivity extends SerialPortActivity {
 			Toast.makeText(MainActivity.this, "播放完成了", Toast.LENGTH_SHORT).show();
 			videoView.start();
 		}
+	}
+
+	public void toShowDialog(String tip) {
+		new AlertDialog.Builder(MainActivity.this).setTitle("系统提示")// 设置对话框标题
+
+				.setMessage(tip)// 设置显示的内容
+
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {// 添加确定按钮
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {// 确定按钮的响应事件
+								// dismiss();
+							}
+
+						}).setNegativeButton("返回", new DialogInterface.OnClickListener() {// 添加返回按钮
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {// 响应事件
+
+							}
+
+						}).show();// 在按键响应事件中显示此对话框
 	}
 }
