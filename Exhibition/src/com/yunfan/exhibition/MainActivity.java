@@ -235,10 +235,10 @@ public class MainActivity extends SerialPortActivity {
 						return;
 
 					int mainPosition = stationResult.getArrivalStation();
+					if (stationList.get(0).getStationNumber() != stationResult.getStartStation())
+						Collections.reverse(stationList);
 
 					if (stationResult.getType() == EnumStationEvent.BeginningAndEnd) {
-						if (stationList.get(0).getStationNumber() != stationResult.getStartStation())
-							Collections.reverse(stationList);
 						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station), stationList.get(0).getStationName());
 						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.end_station), stationList.get(stationList.size() - 1).getStationName());
 					}
