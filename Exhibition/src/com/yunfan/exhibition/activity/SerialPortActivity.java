@@ -1,4 +1,3 @@
-
 package com.yunfan.exhibition.activity;
 
 import java.io.IOException;
@@ -28,17 +27,29 @@ public abstract class SerialPortActivity extends Activity {
 		@Override
 		public void run() {
 			super.run();
-			while(!isInterrupted()) {
+			while (!isInterrupted()) {
 				int size;
 				try {
-					byte[] buffer = new byte[64];
-					if (mInputStream == null) return;
+					byte[] buffer = new byte[1024];
+					if (mInputStream == null)
+						return;
 					size = mInputStream.read(buffer);
 					if (size > 0) {
 						onDataReceived(buffer, size);
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					new AlertDialog.Builder(SerialPortActivity.this).setTitle("系统提示")// 设置对话框标题
+
+							.setMessage(e.getMessage())// 设置显示的内容
+
+							.setPositiveButton("确定", new DialogInterface.OnClickListener() {// 添加确定按钮
+
+										@Override
+										public void onClick(DialogInterface dialog, int which) {// 确定按钮的响应事件
+											SerialPortActivity.this.finish();
+										}
+
+									}).show();// 在按键响应事件中显示此对话框
 					return;
 				}
 			}

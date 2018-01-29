@@ -47,12 +47,12 @@ public class StationView extends LinearLayout {
 		super(context, attrs);
 	}
 
-	public StationView(Context context, StationModel stationModel, int rectangleWidth, int topMiddleWidth) {
+	public StationView(Context context, StationModel stationModel, int rectangleWidth) {
 		super(context);
 		this.context = context;
 		this.stationModel = stationModel;
 		this.rectangleWidth = rectangleWidth;
-		this.topMiddleWidth = topMiddleWidth;
+		// this.topMiddleWidth = topMiddleWidth;
 		initView();
 	}
 
@@ -70,17 +70,18 @@ public class StationView extends LinearLayout {
 		mTvStationInfo = (TextView) mContentLayour.findViewById(R.id.station_information);
 		mTvStationRemarks = (TextView) mContentLayour.findViewById(R.id.station_remarks);
 
-		mTopLeft.getLayoutParams().width = rectangleWidth;
-		mTopMiddle.getLayoutParams().width = topMiddleWidth;
-		mTopMiddle.getLayoutParams().height = topMiddleWidth;
+		// mTopLeft.getLayoutParams().width = rectangleWidth;
+		// mTopMiddle.getLayoutParams().width = topMiddleWidth;
+		// mTopMiddle.getLayoutParams().height = topMiddleWidth;
 		mTopMiddle.setBackgroundDrawable(getResources().getDrawable((stationModel.getArrivalState() == EnumStationType.Arrival) ? (R.drawable.bt_red_tv) : (R.drawable.bt_tv)));
-		mTopRight.getLayoutParams().width = rectangleWidth;
+		// mTopRight.getLayoutParams().width = rectangleWidth;
 
 		Log.e("", "===================>||||" + mTopLeft.getLayoutParams().width + ";" + mTopRight.getLayoutParams().width);
 
 		mTvStationInfo.setTextColor(Color.parseColor((stationModel.getArrivalState() == EnumStationType.Arrival) ? "#ff0000" : "#000000"));
 		mTvStationRemarks.setTextColor(Color.parseColor((stationModel.getArrivalState() == EnumStationType.Arrival) ? "#ff0000" : "#000000"));
-		ViewGroup.LayoutParams lpLayoutParams = new ViewGroup.LayoutParams(22, ViewGroup.LayoutParams.MATCH_PARENT);
+
+		ViewGroup.LayoutParams lpLayoutParams = new ViewGroup.LayoutParams(this.rectangleWidth + 10, ViewGroup.LayoutParams.MATCH_PARENT);
 		mContentLayour.setLayoutParams(lpLayoutParams);
 
 		mTvStationInfo.setText(stationModel.getStationName());

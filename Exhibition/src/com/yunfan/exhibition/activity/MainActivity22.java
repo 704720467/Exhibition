@@ -165,7 +165,7 @@ public class MainActivity22 extends Activity {
 		mStationContentLayout.removeAllViews();
 		for (int i = 0; i < stationList.size(); i++) {
 			StationView stationView;
-			stationView = new StationView(this, stationList.get(i), rectangleWidth, middlePointWidth);
+			stationView = new StationView(this, stationList.get(i), rectangleWidth);
 			if (stationList.get(i).getArrivalState() == EnumStationType.PreArrival)
 				stationView.startBreath();
 			mStationContentLayout.addView(stationView);

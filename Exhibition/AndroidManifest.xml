@@ -15,11 +15,11 @@
         android:name="com.yunfan.exhibition.activity.Application" >
         <activity android:name=".activity.ConsoleActivity" 
             android:screenOrientation="landscape">
-         
+          
         </activity>
         <activity android:name="com.yunfan.exhibition.MainActivity"
             android:screenOrientation="landscape">
-               <intent-filter >
+              <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -32,7 +32,11 @@
         
         <activity android:name="com.yunfan.exhibition.activity.MainActivity22"
             android:screenOrientation="landscape">
-              
+             
+        </activity>
+        
+           <activity android:name="com.yunfan.exhibition.activity.MainActivity23">
+             
         </activity>
         
         <receiver android:name="com.yunfan.exhibition.BootReceiver">

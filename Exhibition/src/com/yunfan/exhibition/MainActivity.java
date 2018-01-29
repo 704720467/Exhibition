@@ -1,5 +1,6 @@
 package com.yunfan.exhibition;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -9,7 +10,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -81,7 +81,7 @@ public class MainActivity extends SerialPortActivity {
 		mTvNowStation = (TextView) findViewById(R.id.now_station);
 		mTvNextStation = (TextView) findViewById(R.id.next_station);
 		mGetBackData = (TextView) findViewById(R.id.get_back_data);
-		mTvDataTv = (TextView) findViewById(R.id.dataTv);
+		// mTvDataTv = (TextView) findViewById(R.id.dataTv);
 		new ExcelDataLoader().execute("lightRailStationName.xls");
 	}
 
@@ -157,6 +157,10 @@ public class MainActivity extends SerialPortActivity {
 			rightAdWidth = screenWidth - mContentLayout.getLayoutParams().width;
 			Log.e(TAG, "===================>MainActivity" + mContentLayout.getLayoutParams().width + ";" + rightAdWidth + ";stationList.size()=" + stationList.size());
 			mVideoLayour.getLayoutParams().width = rightAdWidth;
+
+			MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station), stationList.get(0).getStationName());
+			MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.end_station), stationList.get(stationList.size() - 1).getStationName());
+			MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.next_station), stationList.get(1).getStationName());
 			addChileView();
 		}
 	}
@@ -168,7 +172,7 @@ public class MainActivity extends SerialPortActivity {
 		mStationContentLayout.removeAllViews();
 		for (int i = 0; i < stationList.size(); i++) {
 			StationView stationView;
-			stationView = new StationView(this, stationList.get(i), rectangleWidth, middlePointWidth);
+			stationView = new StationView(this, stationList.get(i), (screenWidth / stationList.size()));
 			if (stationList.get(i).getArrivalState() == EnumStationType.PreArrival)
 				stationView.startBreath();
 			mStationContentLayout.addView(stationView);
@@ -238,10 +242,13 @@ public class MainActivity extends SerialPortActivity {
 					if (stationList.get(0).getStationNumber() != stationResult.getStartStation())
 						Collections.reverse(stationList);
 
-					if (stationResult.getType() == EnumStationEvent.BeginningAndEnd) {
-						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station), stationList.get(0).getStationName());
-						MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.end_station), stationList.get(stationList.size() - 1).getStationName());
-					}
+					// if (stationResult.getType() ==
+					// EnumStationEvent.BeginningAndEnd) {
+					MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.start_station), stationList.get(0).getStationName());
+					MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.end_station), stationList.get(stationList.size() - 1).getStationName());
+					int nextStationPostion = ((stationList.size() - 1) == mainPosition) ? mainPosition : mainPosition + 1;
+					MyTextViewUtil.setStringForTextView((TextView) findViewById(R.id.next_station), stationList.get(nextStationPostion).getStationName());
+					// }
 					if (stationResult.getType() == EnumStationEvent.PreArrival) {
 						if (stationList.size() <= mainPosition)
 							return;
@@ -273,16 +280,42 @@ public class MainActivity extends SerialPortActivity {
 		super.onResume();
 		if (videoView == null)
 			return;
-		String uriStr = "android.resource://" + getPackageName() + "/" + R.raw.zhui_guang_zhe;
-		Uri uri = Uri.parse(uriStr);
-		// 设置视频控制器
-		// videoView.setMediaController(new MediaController(this));
-		// 播放完成回调
-		videoView.setOnCompletionListener(new MyPlayerOnCompletionListener());
-		// 设置视频路径
-		videoView.setVideoURI(uri);
-		// 开始播放视频
-		videoView.start();
+		playVideo();
+	}
+
+	public void playVideo() {
+		File file = new File("storage/emulated/0/DCIM/ad.mp4");
+		if (file.exists()) {
+			videoView.setVideoPath(file.getAbsolutePath());
+			videoView.requestFocus();
+			try {
+				videoView.start();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+				@Override
+				public void onCompletion(MediaPlayer mediaPlayer) {
+					Toast.makeText(MainActivity.this, "视频播放完毕", Toast.LENGTH_SHORT).show();
+				}
+			});
+		} else {
+			Toast.makeText(MainActivity.this, "要播放的视屏文件不存在", Toast.LENGTH_SHORT).show();
+		}
+
+		// String uriStr = "android.resource://" + getPackageName() + "/" +
+		// R.raw.zhui_guang_zhe;
+		// Uri uri = Uri.parse(uriStr);
+		// // 设置视频控制器
+		// // videoView.setMediaController(new MediaController(this));
+		// // 播放完成回调
+		// videoView.setOnCompletionListener(new
+		// MyPlayerOnCompletionListener());
+		// // 设置视频路径
+		// videoView.setVideoURI(uri);
+		// // 开始播放视频
+		// videoView.start();
+
 	}
 
 	class MyPlayerOnCompletionListener implements MediaPlayer.OnCompletionListener {

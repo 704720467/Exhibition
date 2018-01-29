@@ -23,7 +23,7 @@ public class SerialPortUtil {
 	 */
 	public static StationResult analyticData(String strSerialData) {
 		StationResult stationResult = new StationResult();
-		if (strSerialData.length() < 7 * 2 || strSerialData.length() > 20 * 2) {
+		if (strSerialData.length() < 7 * 2 || strSerialData.length() > 20 * 2 || !strSerialData.contains(DATA_START_WITH)) {
 			System.out.println("数据残缺strSerialData：" + strSerialData);
 			stationResult.setDescribe("数据残缺strSerialData：" + strSerialData);
 			return stationResult;
